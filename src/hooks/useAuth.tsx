@@ -129,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(existingSession?.user ?? null);
 
         if (existingSession?.user) {
+          currentUserId = existingSession.user.id;
           await fetchUserData(existingSession.user.id);
         }
       } finally {
