@@ -769,7 +769,7 @@ export default function PatientProfilePage() {
               accept="image/png,image/jpeg"
               onPointerDown={() => { filePickerOpenRef.current = true; }}
               onClick={() => { filePickerOpenRef.current = true; }}
-              onCancel={() => { filePickerOpenRef.current = false; }}
+              {...({ onCancel: () => { filePickerOpenRef.current = false; } } as Record<string, unknown>)}
               onChange={(e) => {
                 setSelectedFile(e.target.files?.[0] || null);
                 window.setTimeout(() => { filePickerOpenRef.current = false; }, 250);
@@ -816,7 +816,7 @@ export default function PatientProfilePage() {
               accept="application/pdf,image/png,image/jpeg"
               onPointerDown={() => { filePickerOpenRef.current = true; }}
               onClick={() => { filePickerOpenRef.current = true; }}
-              onCancel={() => { filePickerOpenRef.current = false; }}
+              {...({ onCancel: () => { filePickerOpenRef.current = false; } } as Record<string, unknown>)}
               onChange={(e) => {
                 setSelectedDocFile(e.target.files?.[0] || null);
                 window.setTimeout(() => { filePickerOpenRef.current = false; }, 250);
