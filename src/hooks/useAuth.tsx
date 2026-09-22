@@ -89,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
+    let currentUserId: string | null = null;
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -98,13 +99,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // Set loading true so downstream pages wait for data
-          setLoading(true);
+          // Only block the UI when the signed-in user actually changes.
+          // Token refreshes (e.g. when returning from the mobile file
+          // picker) must not unmount the current page mid-task.
+          const sameUser = currentUserId === newSession.user.id;
+          currentUserId = newSession.user.id;
+          if (!sameUser) setLoading(true);
           setTimeout(async () => {
             await fetchUserData(newSession.user.id);
-            if (isMounted) setLoading(false);
+            if (isMounted && !sameUser) setLoading(false);
           }, 0);
         } else {
+          currentUserId = null;
           setProfile(null);
           setRoles([]);
           setOrgMemberships([]);
@@ -123,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(existingSession?.user ?? null);
 
         if (existingSession?.user) {
+          currentUserId = existingSession.user.id;
           await fetchUserData(existingSession.user.id);
         }
       } finally {
